@@ -1,5 +1,6 @@
 package checks.voronoi;
 
+import checks.tools.Calc;
 import checks.types.P2;
 import checks.types.Tuple;
 import org.assertj.core.data.Percentage;
@@ -17,14 +18,14 @@ public class SolveTest {
     @Test
     public void solveSecond() throws Exception {
         double x0 = -13, x1 = 3;
-        Tuple<Double, Double> points = Solve.solveQuadratic(1, (-x0 - x1), x0 * x1);
+        Tuple<Double, Double> points = Calc.solveQuadratic(1, (-x0 - x1), x0 * x1);
         assertThat(points.a).isEqualTo(x0);
         assertThat(points.b).isEqualTo(x1);
     }
     @Test
     public void solveSecond35() throws Exception {
         double x0 = 3, x1 = 5;
-        Tuple<Double, Double> points = Solve.solveQuadratic(1, (-x0 - x1), x0 * x1);
+        Tuple<Double, Double> points = Calc.solveQuadratic(1, (-x0 - x1), x0 * x1);
         assertThat(points.a).isEqualTo(x0);
         assertThat(points.b).isEqualTo(x1);
     }

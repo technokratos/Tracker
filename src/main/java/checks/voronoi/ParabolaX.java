@@ -1,5 +1,6 @@
 package checks.voronoi;
 
+import checks.tools.Calc;
 import checks.types.P2;
 import checks.types.Tuple;
 
@@ -59,7 +60,7 @@ public class ParabolaX {
         }
         double d = sqrt(D);
 
-        Tuple<Double, Double> solve = Solve.solveQuadratic(Ai, 2 * Bi_2, Ci);
+        Tuple<Double, Double> solve = Calc.solveQuadratic(Ai, 2 * Bi_2, Ci);
 
         return new Tuple<>(-Bi_2 - d, -Bi_2 + d);
 

@@ -1,6 +1,6 @@
 package checks.types;
 
-import checks.Calc;
+import checks.tools.Calc;
 
 /**
  * Created by denis on 14.02.17.

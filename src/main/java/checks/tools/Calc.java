@@ -1,4 +1,4 @@
-package checks;
+package checks.tools;
 
 import checks.types.P2;
 import checks.types.P2t;
@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.lang.Math.sqrt;
 
 /**
  * Created by denis on 03.02.17.
@@ -54,6 +56,16 @@ public class Calc {
 
         }
         return tuples;
+    }
+
+    public static Tuple<Double, Double> solveQuadratic(double A, double B, double C) {
+        double D = B*B - 4 * A* C;
+        if (D <0 ) {
+            return null;
+        } else {
+            double d = sqrt(D);
+            return new Tuple<>((-B - d) / 2, (-B + d) / 2);
+        }
     }
 
 

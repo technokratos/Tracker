@@ -1,5 +1,6 @@
 package checks;
 
+import checks.tools.Calc;
 import checks.types.P2t;
 import checks.types.P3;
 import checks.types.Tuple;

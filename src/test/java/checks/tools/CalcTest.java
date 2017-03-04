@@ -1,10 +1,13 @@
-package checks;
+package checks.tools;
 
 
+import checks.tools.Calc;
 import checks.types.P2;
 import checks.types.P2t;
 import checks.types.P3;
 import checks.types.Tuple;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.data.Percentage;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,8 +42,10 @@ public class CalcTest {
 
             P2t x = new Calc().multInvMatrixOnB(a, b, c, d, B.x, B.y);
             //P2t x = new Calc().multInvMatrixOnB(1, 2, 3, 4, 5, 11);
-            Assert.assertTrue(Math.abs(x0 - x.x) < 0.0001);
-            Assert.assertTrue(Math.abs(x1 - x.y) < 0.0001);
+            Assertions.assertThat(x.x).isCloseTo(x0, Percentage.withPercentage(0.01));
+            Assertions.assertThat(x.y).isCloseTo(x1, Percentage.withPercentage(0.01));
+            //Assert.assertTrue(Math.abs(x0 - x.x) < 0.0001);
+            //Assert.assertTrue(Math.abs(x1 - x.y) < 0.0001);
         }
     }
 

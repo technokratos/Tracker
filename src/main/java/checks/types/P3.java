@@ -1,6 +1,5 @@
 package checks.types;
 
-import static checks.Calc.ACCURACY;
 import static java.lang.Math.abs;
 
 /**

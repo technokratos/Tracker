@@ -34,8 +34,8 @@ import boofcv.io.wrapper.images.JpegByteImageSequence;
 import boofcv.misc.BoofMiscOps;
 import boofcv.struct.image.*;
 import checks.dir.DirCollector;
-import checks.dir.DirCollector.PointDirection;
 import checks.neighborns.Pifagor;
+import checks.tools.Calc;
 import checks.tools.Tools;
 import checks.types.*;
 

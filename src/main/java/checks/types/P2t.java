@@ -1,7 +1,7 @@
 package checks.types;
 
 import boofcv.abst.feature.tracker.PointTrack;
-import checks.Calc;
+import checks.tools.Calc;
 import lombok.Data;
 
 /**

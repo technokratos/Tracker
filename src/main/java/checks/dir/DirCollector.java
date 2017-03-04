@@ -1,6 +1,6 @@
 package checks.dir;
 
-import checks.Calc;
+import checks.tools.Calc;
 import checks.neighborns.Pifagor.Link;
 import checks.types.P2;
 import checks.types.P2t;

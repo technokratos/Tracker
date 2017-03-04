@@ -1,6 +1,6 @@
 package checks.voronoi;
 
-import checks.Calc;
+import checks.tools.Calc;
 import checks.types.P2;
 import checks.types.Tuple;
 
@@ -8,23 +8,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static java.lang.Math.sqrt;
-
 /**
  * Created by denis on 14.02.17.
  */
 
 public class Solve {
-
-    public static Tuple<Double, Double> solveQuadratic(double A, double B, double C) {
-        double D = B*B - 4 * A* C;
-        if (D <0 ) {
-            return null;
-        } else {
-            double d = sqrt(D);
-            return new Tuple<>((-B - d) / 2, (-B + d) / 2);
-        }
-    }
 
 
     public static List<VorZone> findZones(List<P2> points) {
