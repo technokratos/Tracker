@@ -27,20 +27,19 @@ import boofcv.io.wrapper.DefaultMediaManager;
 import boofcv.io.wrapper.images.JpegByteImageSequence;
 import boofcv.io.wrapper.images.LoadFileImageSequence;
 import boofcv.misc.BoofMiscOps;
-import boofcv.struct.image.*;
-import checks.processors.DetectDirsProcessor;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.ImageGray;
+import boofcv.struct.image.ImageType;
+import checks.history.HistoryTracker;
+import checks.processors.BaseProcessor;
 import checks.processors.ImageProcessor;
-import checks.types.*;
+import checks.processors.operations.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
-import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import static java.lang.Math.abs;
 
 /**
  * <p>
@@ -53,19 +52,16 @@ import static java.lang.Math.abs;
  *
  * @author Peter Abeles
  */
-public class Tracer< T extends ImageGray, D extends ImageGray>
+public class BaseTracer< T extends ImageGray, D extends ImageGray>
 {
-	public static final int DIVIDE_ZONE = 4;
-
 	// displays the video sequence and tracked features
 	private ImagePanel gui = new ImagePanel();
 
 	private final ImageProcessor imageProcessor;
-
 	private int pause;
 	private final double factor;
 
-	public Tracer(ImageProcessor imageProcessor, int pause, double factor) {
+	public BaseTracer(ImageProcessor imageProcessor, int pause, double factor) {
 
 		this.imageProcessor = imageProcessor;
 		this.pause = pause;
@@ -76,23 +72,16 @@ public class Tracer< T extends ImageGray, D extends ImageGray>
 	 * Processes the sequence of images and displays the tracked features in a window
 	 */
 	public void process(SimpleImageSequence<T> sequence) {
-
 		// Figure out how large the GUI window should be
 		T frame = sequence.next();
-		gui.setPreferredSize(new Dimension( (int)(factor * frame.getWidth()), (int) (factor * frame.getHeight())));
+		gui.setPreferredSize(new Dimension( 600, 500));
 		ShowImages.showWindow(gui,"KTL Tracker", true);
 
-
-		// process each frame in the image sequence
 		while( sequence.hasNext() ) {
 
 			frame = sequence.next();
 
-			// tell the tracker to process the frame
-			//tracker.process(frame);
 			imageProcessor.tracking(frame);
-
-			// visualize tracking results
 			final BufferedImage image = imageProcessor.processImage(sequence.getGuiImage(), sequence.getFrameNumber());
 
 			updateGUI(image);
@@ -102,30 +91,10 @@ public class Tracer< T extends ImageGray, D extends ImageGray>
 		}
 	}
 
-
-
-	/**
-	 * Draw tracked features in blue, or red if they were just spawned.
-	 */
 	private void updateGUI(BufferedImage orig) {
-		Graphics2D g2 = orig.createGraphics();
-
-		// tell the GUI to update
 		gui.setBufferedImage(orig);
 		gui.repaint();
 	}
-
-	public static Map<Integer, List<P2t>> reduceByX(List<P2t> tracks) {
-		return tracks.stream().sorted()
-                    .collect(Collectors.groupingBy(p -> (int) p.x % DIVIDE_ZONE));
-	}
-	public static Map<Integer, List<P2t>> reduceByY(List<P2t> tracks) {
-		return tracks.stream().sorted()
-				.collect(Collectors.groupingBy(p -> (int) p.y % DIVIDE_ZONE));
-	}
-
-
-
 
 	public static void main( String args[] ) throws FileNotFoundException {
 
@@ -135,17 +104,32 @@ public class Tracer< T extends ImageGray, D extends ImageGray>
 
 		int pause;
 		SimpleImageSequence sequence =
-				new LoadFileImageSequence(ImageType.single(imageType), "src/main/resources/readyImages/cubes","png");pause=1000;
+				new LoadFileImageSequence(ImageType.single(imageType), "src/main/resources/readyImages/cubes","png");pause=2000;
 				//Tools.readGif("flyer.gif"); pause = 1000;
 				//Tools.readGif("racing2.gif"); pause = 1000;
 				//media.openVideo("zoom.mjpeg", ImageType.single(imageType)); pause=1500;
 //				media.openCamera(null,640,480,ImageType.single(imageType)); pause = 5;
 
-		//setSubList((JpegByteImageSequence) sequence, 10,3);
-
 		sequence.setLoop(true);
 
-		Tracer app = new Tracer(new DetectDirsProcessor<>(imageType), pause, 3);
+		final BaseProcessor imageProcessor = new BaseProcessor(imageType, 10, HistoryTracker.Type.DEPTH);
+		////FindLinks
+		//linkWithPrevPoints
+		//draw links
+		//findDirs
+		//drawdirs
+		imageProcessor
+				.add(new DrawTracks())
+				//.add(new DrawPrevPoints())
+				.add(new FindLinks())
+				//.add(new ShowLinks())
+
+				.add(new LinkPrevPointForLinks())
+				.add(new DrawLinksWithPrevPoints())
+				.add(new FindAndCountDirs(320, 240))
+				.add(new DrawDirs(320, 240, 0.01));
+
+		BaseTracer app = new BaseTracer(imageProcessor, pause, 3);
 
 
 		app.process(sequence);

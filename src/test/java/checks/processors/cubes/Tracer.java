@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package checks;
+package checks.processors.cubes;
 
 import boofcv.abst.feature.tracker.PointTracker;
 import boofcv.gui.image.ImagePanel;
@@ -27,20 +27,20 @@ import boofcv.io.wrapper.DefaultMediaManager;
 import boofcv.io.wrapper.images.JpegByteImageSequence;
 import boofcv.io.wrapper.images.LoadFileImageSequence;
 import boofcv.misc.BoofMiscOps;
-import boofcv.struct.image.*;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.ImageGray;
+import boofcv.struct.image.ImageType;
 import checks.processors.DetectDirsProcessor;
 import checks.processors.ImageProcessor;
-import checks.types.*;
+import checks.types.P2t;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
-import java.util.*;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.lang.Math.abs;
 
 /**
  * <p>

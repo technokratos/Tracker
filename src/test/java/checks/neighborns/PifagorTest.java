@@ -1,11 +1,9 @@
 package checks.neighborns;
 
 import checks.types.P2;
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

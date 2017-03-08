@@ -70,4 +70,9 @@ public class P2t extends P2 implements Comparable<P2>{
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "["+ x+ ";"+y+"]id="+id+";s="+series +";";
+    }
 }

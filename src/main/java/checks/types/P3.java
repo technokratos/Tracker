@@ -68,14 +68,14 @@ public class P3 {
     }
 
     public boolean parrall(P3 p) {
-        double len1 = Math.sqrt(p.qrtDist());
-        double len = Math.sqrt(qrtDist());
+        double len1 = Math.sqrt(p.dist2());
+        double len = Math.sqrt(dist2());
         return abs(x/len - p.x/len1 ) < accuracy
                 && abs(y/len - p.y/len1)< accuracy
                 && abs(z/len - p.z/len1)< accuracy;
     }
 
-    private double qrtDist() {
+    private double dist2() {
         return x*x + y*y + z*z;
     }
 
@@ -105,7 +105,7 @@ public class P3 {
     }
 
     public P3 norm() {
-        double len = Math.sqrt(qrtDist());
+        double len = Math.sqrt(dist2());
         return new P3(x/len,y/len, z/len);
 
     }

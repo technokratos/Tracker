@@ -34,7 +34,7 @@ import boofcv.misc.BoofMiscOps;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.ImageGray;
 import boofcv.struct.image.ImageType;
-import checks.HistoryTracker;
+import checks.history.HistoryTracker;
 import checks.types.P2t;
 import checks.types.Tuple;
 
@@ -47,7 +47,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static checks.HistoryTracker.MAX_FEATURES;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -204,12 +203,12 @@ public class TracerLab< T extends ImageGray, D extends ImageGray>
 		config.pyramidScaling = new int[]{1,2,4,8};
 
 		PointTracker<T> pointTracker = FactoryPointTracker.klt(config,
-				new ConfigGeneralDetector(MAX_FEATURES, 6, 1),
+				new ConfigGeneralDetector(100, 6, 1),
 				imageType, derivType);
 		PointTracker<T> secondTracker = FactoryPointTracker.klt(config,
-				new ConfigGeneralDetector(MAX_FEATURES, 6, 1),
+				new ConfigGeneralDetector(100, 6, 1),
 				imageType, derivType);
-		tracker = new HistoryTracker<>(pointTracker, secondTracker);
+		tracker = new HistoryTracker<>(pointTracker, secondTracker, HistoryTracker.Type.DEPTH);
 	}
 
 	/**
@@ -222,7 +221,7 @@ public class TracerLab< T extends ImageGray, D extends ImageGray>
 		configDetector.initialSampleSize = 2;
 		PointTracker<T> tPointTracker = FactoryPointTracker.dda_FH_SURF_Fast(configDetector, null, null, imageType);
 		PointTracker<T> secondTracker = FactoryPointTracker.dda_FH_SURF_Fast(configDetector, null, null, imageType);
-		tracker = new HistoryTracker<>(tPointTracker, secondTracker);
+		tracker = new HistoryTracker<>(tPointTracker, secondTracker, HistoryTracker.Type.DEPTH);
 	}
 
 	public static void main( String args[] ) throws FileNotFoundException {

@@ -1,13 +1,9 @@
-package checks;
+package checks.history;
 
 import boofcv.abst.feature.tracker.PointTrack;
 import boofcv.abst.feature.tracker.PointTracker;
 import boofcv.struct.image.ImageGray;
-import checks.history.DepthContainer;
-import checks.history.FirstContainer;
-import checks.history.HistoryContainer;
 import checks.types.P2t;
-import checks.types.Tuple;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +16,7 @@ public class HistoryTracker<I extends ImageGray> implements PointTracker<I> {
     public static final int HISTORY_DEPTH = 10;
     public static final int FIRST = 0;
     public static final int SECOND = 1;
-    public static int MAX_FEATURES = 100;
+
 
 
 
@@ -29,17 +25,21 @@ public class HistoryTracker<I extends ImageGray> implements PointTracker<I> {
 
     private int spawnCount = 0;
     private int spawnRepeat = 10;
-//    final HistoryContainer firstContainer = new FirstContainer();//HISTORY_DEPTH);
-//    final HistoryContainer secondContainer = new FirstContainer();//(HISTORY_DEPTH)
 
-    final HistoryContainer firstContainer = new DepthContainer(HISTORY_DEPTH);
-    final HistoryContainer secondContainer = new DepthContainer(HISTORY_DEPTH);
+    final HistoryContainer firstContainer;
+    final HistoryContainer secondContainer;
 
-    //private final List<PointTrack> pointTracks = new ArrayList<>(2 * MAX_FEATURES);
-
-    public HistoryTracker(PointTracker<I> klt, PointTracker<I> secondTracker) {
+    public HistoryTracker(PointTracker<I> klt, PointTracker<I> secondTracker, Type prev) {
         firstTraker = klt;
         this.secondTracker = secondTracker;
+
+        if (prev.equals(Type.DEPTH)) {
+            firstContainer = new DepthContainer(HISTORY_DEPTH);
+            secondContainer = new DepthContainer(HISTORY_DEPTH);
+        } else {
+             firstContainer = new FirstContainer();
+            secondContainer = new FirstContainer();
+        }
     }
 
     @Override
@@ -54,8 +54,6 @@ public class HistoryTracker<I extends ImageGray> implements PointTracker<I> {
         spawnTracksSeparate();
 
     }
-
-    //public void addToHistory(List<PointTrack> list, )
 
     @Override
     public void reset() {
@@ -84,7 +82,7 @@ public class HistoryTracker<I extends ImageGray> implements PointTracker<I> {
 
 
     public List<P2t> getActiveTracks() {
-        List<P2t> list = new ArrayList<>(2 * MAX_FEATURES);
+        List<P2t> list = new ArrayList<>(2 * firstTraker.getActiveTracks(null).size());
         list.addAll(firstTraker.getActiveTracks(null).stream()
                 .map(p -> new P2t(p, 0))
                 .collect(Collectors.toList()));
@@ -149,16 +147,13 @@ public class HistoryTracker<I extends ImageGray> implements PointTracker<I> {
     public P2t getPrevTrack(P2t p2) {
         HistoryContainer historyContainer = (p2.series == FIRST)? firstContainer: secondContainer;
         return historyContainer.getPrev(p2);
-//        return firstContainer.getPrev(p2);
-
-    }
-
-    public List<Tuple> getNeighbors(){
-        //FactoryNearestNeighbor.kdtree(2);
-       throw new UnsupportedOperationException();
     }
 
     public int getSpawnCount() {
         return spawnCount;
+    }
+
+    public enum Type {
+        FIRST, DEPTH
     }
 }

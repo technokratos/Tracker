@@ -157,23 +157,37 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.lwjgl.lwjgl/lwjgl -->
+        <dependency>
+            <groupId>org.lwjgl.lwjgl</groupId>
+            <artifactId>lwjgl</artifactId>
+            <version>2.9.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/de.jarnbjo/j-ogg-all -->
+        <dependency>
+            <groupId>de.jarnbjo</groupId>
+            <artifactId>j-ogg-all</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
-        <dependency>
-            <groupId>${jme3_g}</groupId>
-            <artifactId>jme3-core</artifactId>
-            <version>${jme3_v}</version>
-        </dependency>
-        <dependency>
-            <groupId>${jme3_g}</groupId>
-            <artifactId>jme3-desktop</artifactId>
-            <version>${jme3_v}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>${jme3_g}</groupId>
-            <artifactId>jme3-lwjgl</artifactId>
-            <version>${jme3_v}</version>
-        </dependency>
+
+
+        <!--<dependency>-->
+            <!--<groupId>${jme3_g}</groupId>-->
+            <!--<artifactId>jme3-core</artifactId>-->
+            <!--<version>${jme3_v}</version>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>${jme3_g}</groupId>-->
+            <!--<artifactId>jme3-desktop</artifactId>-->
+            <!--<version>${jme3_v}</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>${jme3_g}</groupId>-->
+            <!--<artifactId>jme3-lwjgl</artifactId>-->
+            <!--<version>${jme3_v}</version>-->
+        <!--</dependency>-->
 
         <!--<dependency>
             <groupId>org.junit.jupiter</groupId>

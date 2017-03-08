@@ -3,10 +3,8 @@ package checks.neighborns;
 import checks.types.P2;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static java.lang.Math.*;
@@ -27,13 +25,19 @@ public class Pifagor {
         points.sort(comparator);
         LinkedList<Link> activeLinks = new LinkedList<>();
         LinkedList<Link> result = new LinkedList<>();
+        if (points.size() <2) {
+            return Collections.emptyList();
+        }
         P2 firstPoint = points.get(0);
         P2 secondPoint = points.get(1);
         Link firstLink = Link.initLink(firstPoint, secondPoint);
         activeLinks.add(firstLink);
 
+        double minY = points.stream().min((Comparator<P2>) (pA, pB) -> (int) Math.signum(pA.y - pB.y)).get().y;
+        double maxY = points.stream().max((Comparator<P2>) (pA, pB) -> (int) Math.signum(pA.y - pB.y)).get().y;
 
-        double lineX = secondPoint.getX();
+        //double lineX = secondPoint.getX();
+        double lastX = secondPoint.getX();
         LastPoint lastLineXPoint = new LastPoint(secondPoint);
         IntStream.range(2, points.size())
                 .mapToObj(points::get)
@@ -41,58 +45,28 @@ public class Pifagor {
                     List<Link> toRemove = new ArrayList<>();
                     List<Link> toAdd = new ArrayList<>();
 
-                    activeLinks.forEach(activeLink -> {
-                        //remove active Link if all distances is less then length of to line
+                    final Optional<Link> nearestLinkOpt = activeLinks.stream().min((link1, link2) -> (int) Math.signum(link1.midDist2(challenger) - link2.midDist2(challenger)));
+
+                    final Link nearestLink = nearestLinkOpt.get();
+                    //distance to nearest link is greater than dist between  ([ch.x; maxy] and [ch.x;miny]) and active link
+                    final P2 downPoint = new P2(challenger.x, maxY);
+                    final P2 upPoint = new P2(challenger.x, minY);
+                    double distToUp = nearestLink.midDist2(downPoint);
+                    double distToDown = nearestLink.midDist2(upPoint);
+
+                    //filter remove not need active links
+//                    activeLinks.stream()
+//                            .filter(a-> a.midDist2(downPoint) > distToDown && a.midDist2(upPoint)> distToUp)
+//                            .forEach(toRemove::add);
+                    final List<Link> fromActiveToResult = activeLinks.stream()
+                            .filter(a -> a.midDist2(downPoint) > distToDown && a.midDist2(upPoint) > distToUp)
+                            .collect(Collectors.toList());
+                    toRemove.addAll(fromActiveToResult);
+                    result.addAll(fromActiveToResult);
 
 
-                        if (toAdd.size() > 0) {
-                            //if already added link for this point, then filter next by  distance between last added points
-                            // or length of link is lesser then distance to line
-                            //second greater the first then 1;
-                            //if (comparator.compare(challenger, lastLineXPoint.p) >= 0
-//                            if (comparator.compare(lastLineXPoint.p, challenger) >= 0
-//                                    && activeLink.minDistGreaterLength(challenger.x)) {
-                            if (activeLink.minDistGreaterLength(challenger.x)) {
-                                toRemove.add(activeLink);
-                                result.add(activeLink);
-                                return;
+                    addLink(challenger, toRemove, toAdd, nearestLink);
 
-                            }
-                            lastLineXPoint.p = challenger;
-                        }
-                        //if (lastLineXPoint.p != challenger) {
-
-                        //}
-
-                        P2 a = activeLink.a.p;
-                        P2 b = activeLink.b.p;
-                        P2 c = challenger;
-                        double ca = challenger.dist2(a),
-                                cb = challenger.dist2(b),
-                                ab = activeLink.dist2;
-
-                        if (ab > ca + cb) {
-                            //insert point, remove old line, add two lines
-                            activeLink.remove();
-                            toRemove.add(activeLink);
-
-                            toAdd.add(Link.initLink(a, c));
-                            toAdd.add(Link.initLink(b, c));
-                        } else if ( toAdd.isEmpty()
-                                || (toAdd.get(0).dist2 >= ca && toAdd.get(0).dist2 >= cb) ) {
-                            // add to near point, and check new links is shorter previous link
-                            if (toAdd.size() == 1) {
-                                toAdd.remove(0);
-                            }
-                            if (ca < cb) {
-                                //add to a
-                                toAdd.add(Link.initLink(a, c));
-                            } else {
-                                //add to b
-                                toAdd.add(Link.initLink(b, c));
-                            }
-                        }
-                    });
                     activeLinks.removeAll(toRemove);
                     activeLinks.addAll(toAdd);
 
@@ -101,6 +75,36 @@ public class Pifagor {
         return result;
     }
 
+    private static void addLink(P2 challenger, List<Link> toRemove, List<Link> toAdd, Link activeLink) {
+        P2 a = activeLink.a.p;
+        P2 b = activeLink.b.p;
+        P2 c = challenger;
+        double ca = challenger.dist2(a),
+                cb = challenger.dist2(b),
+                ab = activeLink.dist2;
+
+        if (ab > ca + cb) {
+            //insert point, remove old line, add two lines
+            activeLink.remove();
+            toRemove.add(activeLink);
+
+            toAdd.add(Link.initLink(a, c));
+            toAdd.add(Link.initLink(b, c));
+        } else if ( toAdd.isEmpty()
+                || (toAdd.get(0).dist2 >= ca && toAdd.get(0).dist2 >= cb) ) {
+            // add to near point, and check new links is shorter previous link
+            if (toAdd.size() == 1) {
+                toAdd.remove(0);
+            }
+            if (ca < cb) {
+                //add to a
+                toAdd.add(Link.initLink(a, c));
+            } else {
+                //add to b
+                toAdd.add(Link.initLink(b, c));
+            }
+        }
+    }
 
 
     @EqualsAndHashCode
@@ -166,6 +170,11 @@ public class Pifagor {
                     '}';
         }
 
+        public double midDist2(P2 challenger) {
+            final double ad = a.getP().dist2(challenger);
+            final double bd = b.getP().dist2(challenger);
+            return ad<bd? ad: bd;
+        }
     }
 
 
