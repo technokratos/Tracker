@@ -50,8 +50,11 @@ public class TestTangentSpace extends SimpleApplication {
         final Vector3f near = new Vector3f(-0.1f, -0.1f, -0.1f);
         steps.add(near);
         steps.add(near);
-        steps.add(near);
-        final Vector3f far = near.mult(-1);
+        steps.add(near.mult(2f));
+        steps.add(near.mult(2f));
+        steps.add(near.mult(4f));
+        steps.add(near.mult(4f));
+        final Vector3f far = near.mult(-3);
         steps.add(far);
         steps.add(far);
         steps.add(far);

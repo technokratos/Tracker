@@ -115,7 +115,7 @@ public class Pifagor {
 
 
         public Link(PointWrapper a, PointWrapper b) {
-            this(a,b, a.p.dist(b.p));
+            this(a,b, a.p.dist2(b.p));
         }
 
         public Link(PointWrapper a, PointWrapper b, double dist2) {
@@ -138,10 +138,10 @@ public class Pifagor {
             return initLink(a, b, a.dist2(b));
         }
 
-        public static Link initLink(P2 a, P2 b, double dist) {
+        public static Link initLink(P2 a, P2 b, double dist2) {
             PointWrapper aw = new PointWrapper(a);
             PointWrapper bw = new PointWrapper(b);
-            Link link = new Link(aw, bw, dist);
+            Link link = new Link(aw, bw, dist2);
             aw.links.add(link);
             bw.links.add(link);
             return link;
