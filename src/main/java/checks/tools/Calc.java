@@ -183,9 +183,12 @@ public class Calc {
             }
 
         } else {
-            z = 0;
-            x = firstLine.b.x - firstLine.a.x;
-            y = firstLine.b.y - firstLine.a.y;
+            //skip this point
+            //it's impossible to resolve direction, forward or backward
+//            z = 0;
+//            x = firstLine.b.x - firstLine.a.x;
+//            y = firstLine.b.y - firstLine.a.y;
+            return null;
         }
 
 

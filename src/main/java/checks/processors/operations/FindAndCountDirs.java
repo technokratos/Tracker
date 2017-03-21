@@ -5,10 +5,8 @@ import checks.tools.Calc;
 import checks.types.*;
 
 import java.awt.*;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -48,6 +46,9 @@ public class FindAndCountDirs implements BiFunction<List<Tuple<Pifagor.Link, Tup
                     Tuple<? extends P2, ? extends P2> firstLine = new Tuple<>(link.getA().getP(), prev.a);
                     Tuple<? extends P2, ? extends P2> secondLine = new Tuple<>(link.getB().getP(), prev.b);
                     P3 dir = calc.findDir(firstLine, secondLine);
+                    if (dir == null) {
+                        return null;
+                    }
                     //Color color = (dir.z > 0) ? Color.blue : Color.red;
                     //VisualizeFeatures.drawPoint(g2, dir.x, dir.y, 2, color, true);
 
@@ -67,6 +68,7 @@ public class FindAndCountDirs implements BiFunction<List<Tuple<Pifagor.Link, Tup
                     }
                     return dir;
                 })
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         Map<Count, java.util.List<Map.Entry<P3, Count>>> countToDirWithCount = dirWithCount.entrySet().stream().collect(Collectors.groupingBy(Map.Entry::getValue));

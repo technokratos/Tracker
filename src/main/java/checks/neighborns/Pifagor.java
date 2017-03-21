@@ -47,6 +47,11 @@ public class Pifagor {
 
                     final Optional<Link> nearestLinkOpt = activeLinks.stream().min((link1, link2) -> (int) Math.signum(link1.midDist2(challenger) - link2.midDist2(challenger)));
 
+                    //filter points, witch is equals with exist;
+                    if (nearestLinkOpt.get().midDist2(challenger) < 1) {
+                        return;//skip the point
+                    }
+
                     final Link nearestLink = nearestLinkOpt.get();
                     //distance to nearest link is greater than dist between  ([ch.x; maxy] and [ch.x;miny]) and active link
                     final P2 downPoint = new P2(challenger.x, maxY);

@@ -34,6 +34,7 @@ import checks.history.HistoryTracker;
 import checks.processors.BaseProcessor;
 import checks.processors.ImageProcessor;
 import checks.processors.operations.*;
+import checks.tools.Tools;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -112,7 +113,7 @@ public class BaseTracer< T extends ImageGray, D extends ImageGray>
 
 		sequence.setLoop(true);
 
-		final BaseProcessor imageProcessor = new BaseProcessor(imageType, 10, HistoryTracker.Type.DEPTH);
+		final BaseProcessor imageProcessor = new BaseProcessor(imageType, 100, HistoryTracker.Type.DEPTH);
 		////FindLinks
 		//linkWithPrevPoints
 		//draw links
