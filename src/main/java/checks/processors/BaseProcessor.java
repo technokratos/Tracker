@@ -14,7 +14,6 @@ import checks.types.*;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import static java.lang.Math.abs;
@@ -29,7 +28,7 @@ public class BaseProcessor<T extends ImageGray, D extends ImageGray> implements 
     private final Class<D> derivType;
 
 
-    FunctionList functionList;// = new FunctionList();
+    final FunctionList functionList;// = new FunctionList();
 
     public static final int NEAR_POSITION = 5;
 
@@ -39,17 +38,14 @@ public class BaseProcessor<T extends ImageGray, D extends ImageGray> implements 
     private HistoryTracker<T> tracker;
     private final int features;
 
-    public BaseProcessor(Class<T> imageType, int features, HistoryTracker.Type first) {
+    public BaseProcessor(FunctionList functionList, Class<T> imageType, int features, HistoryTracker.Type first) {
         this.imageType = imageType;
         this.derivType = GImageDerivativeOps.getDerivativeType(imageType);
         this.features = features;
+        this.functionList = functionList;
         createKLT(first);
     }
 
-    public <T, R> FunctionList<R, ? extends Object> add(Function<T,R> function) {
-        functionList = FunctionList.get(function);
-        return functionList;
-    }
 
     /**
      * A simple way to create a Kanade-Lucas-Tomasi (KLT) tracker.

@@ -34,6 +34,7 @@ import checks.history.HistoryTracker;
 import checks.processors.BaseProcessor;
 import checks.processors.ImageProcessor;
 import checks.processors.operations.*;
+import checks.types.P2t;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -112,22 +113,16 @@ public class BaseTracer< T extends ImageGray, D extends ImageGray>
 
 		sequence.setLoop(true);
 
-		final BaseProcessor imageProcessor = new BaseProcessor(imageType, 100, HistoryTracker.Type.DEPTH);
-		////FindLinks
-		//linkWithPrevPoints
-		//draw links
-		//findDirs
-		//drawdirs
-		imageProcessor
-				.add(new DrawTracks())
-				//.add(new DrawPrevPoints())
-				.add(new FindLinks())
+		final FunctionList<List<P2t>> functionList = FunctionList.get(new DrawTracks());
+		functionList.add(new FindLinks())
 				//.add(new ShowLinks())
 
 				.add(new LinkPrevPointForLinks())
 				.add(new DrawLinksWithPrevPoints())
 				.add(new FindAndCountDirs(320, 240))
 				.add(new DrawDirs(320, 240, 0.01));
+		final BaseProcessor imageProcessor = new BaseProcessor(functionList, imageType, 100, HistoryTracker.Type.DEPTH);
+
 
 		BaseTracer app = new BaseTracer(imageProcessor, pause, 3);
 
