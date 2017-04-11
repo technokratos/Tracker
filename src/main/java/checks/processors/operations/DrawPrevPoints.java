@@ -1,6 +1,5 @@
 package checks.processors.operations;
 
-import boofcv.gui.feature.VisualizeFeatures;
 import checks.types.P2t;
 import checks.types.Tuple;
 
@@ -13,9 +12,15 @@ import static java.lang.Math.abs;
 /**
  * Created by denis on 07.03.17.
  */
-public class DrawPrevPoints extends ContextFunction<List<P2t>, Graphics2D, List<P2t>> {
+public class DrawPrevPoints extends ContextFunction<List<P2t>,  List<P2t>> {
+    final Graphics2D g2;
+
+    public DrawPrevPoints(Graphics2D g2) {
+        this.g2 = g2;
+    }
+
     @Override
-    public List<P2t> apply(List<P2t> tracks, Graphics2D g2) {
+    public List<P2t> apply(List<P2t> tracks) {
         g2.setColor(Color.RED);
         tracks.stream()
                 .map(p-> new Tuple<>(tracker.getPrevTrack(p), p))

@@ -154,7 +154,7 @@ public class MainHoveringTank extends SimpleApplication implements AnalogListene
         spaceCraft.setLocalRotation(new Quaternion(new float[]{0, 0.01f, 0}));
 
         initAudio();
-        hoverControl = new PhysicsHoverControl(colShape, 500, windNode);
+        hoverControl = new PhysicsHoverControl(colShape, 1000, windNode, new AudioContainer(rootNode, assetManager, "Sound/Effects/zap2.wav", 5));
 
         spaceCraft.addControl(hoverControl);
 

@@ -13,11 +13,11 @@ import java.util.function.BiFunction;
 /**
  * Created by denis on 07.03.17.
  */
-public class FindLinks extends ContextFunction<java.util.List<P2t>,Graphics2D, List<Link>> {
+public class FindLinks extends ContextFunction<java.util.List<P2t>, List<Link>> {
 
 
     @Override
-    public List<Link> apply(java.util.List<P2t> tracks, Graphics2D graphics2D) {
+    public List<Link> apply(java.util.List<P2t> tracks) {
         return Pifagor.findLinks(tracks);
     }
 }

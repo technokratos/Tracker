@@ -7,12 +7,14 @@ import checks.types.P3;
 import java.awt.*;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Created by denis on 07.03.17.
  */
-public class DrawDirs implements BiFunction<Map<Count, List<Map.Entry<P3, Count>>>, Graphics2D, Map<Count, List<Map.Entry<P3, Count>>>> {
+public class DrawDirs extends ContextFunction<Map<Count,List<Map.Entry<P3,Count>>>,Map<Count,List<Map.Entry<P3,Count>>>> {
+
+
     final int x0;
     final int y0;
     final private double limitLevel;
@@ -25,7 +27,7 @@ public class DrawDirs implements BiFunction<Map<Count, List<Map.Entry<P3, Count>
     }
 
     @Override
-    public Map<Count, List<Map.Entry<P3, Count>>> apply(Map<Count, List<Map.Entry<P3, Count>>> countToDirWithCount , Graphics2D g2) {
+    public Map<Count, List<Map.Entry<P3, Count>>> apply(Map<Count, List<Map.Entry<P3, Count>>> countToDirWithCount ) {
 
         final int limit = countToDirWithCount.entrySet().stream().mapToInt(e -> e.getValue().stream().mapToInt(c -> c.getValue().getValue()).sum()).sum();
 

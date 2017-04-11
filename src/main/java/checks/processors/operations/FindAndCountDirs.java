@@ -7,13 +7,13 @@ import checks.types.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * Created by denis on 07.03.17.
  */
-public class FindAndCountDirs implements BiFunction<List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>, Graphics2D, Map<Count, List<Map.Entry<P3, Count>>>> {
+public class FindAndCountDirs extends ContextFunction<List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>, Map<Count, List<Map.Entry<P3, Count>>>> {
 
     final int x0;
     final int y0;
@@ -24,7 +24,7 @@ public class FindAndCountDirs implements BiFunction<List<Tuple<Pifagor.Link, Tup
     }
 
     @Override
-    public Map<Count, List<Map.Entry<P3, Count>>> apply(List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> linkWithPrevPoints, Graphics2D g2) {
+    public Map<Count, List<Map.Entry<P3, Count>>> apply(List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> linkWithPrevPoints) {
         Calc calc = new Calc();
         Random r = new Random();
         g2.setColor(Color.BLACK);

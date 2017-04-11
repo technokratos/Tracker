@@ -20,10 +20,14 @@ public class AudioContainer {
     protected final AssetManager assetManager;
     private final String source;
     private final long playBackTime;
-
-
+    private final int limit;
 
     public AudioContainer(Node rootNode, AssetManager assetManager, String source) {
+        this(rootNode, assetManager, source, 10);
+    }
+
+    public AudioContainer(Node rootNode, AssetManager assetManager, String source, int limit) {
+        this.limit = limit;
         this.rootNode = rootNode;
         this.assetManager = assetManager;
         this.source = source;
@@ -59,6 +63,9 @@ public class AudioContainer {
 //                 System.out.println("SET time  " + audioWithTimes.time);
                  return;
              }
+        }
+        if (audioNodes.size() >= limit) {
+            return;
         }
         final AudioNode child = addAudioNode(rootNode, assetManager, source);
         if (position != null) {

@@ -3,26 +3,27 @@ package checks.processors.operations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Created by denis on 07.03.17.
  */
-public class FunctionList<T,U,R> {
+public class FunctionList<T,R> {
 
-    List<BiFunction> list = new ArrayList<>();
+    List<Function> list = new ArrayList<>();
 
-    public static <T,U,R> FunctionList<R,U,? extends Object> get(BiFunction<T, U, R> biFunction){
-        final FunctionList<R, U, Object> functionList = new FunctionList<>();
+    public static <T,R> FunctionList<R,? extends Object> get(Function<T, R> biFunction){
+        final FunctionList<R, R> functionList = new FunctionList<>();
         functionList.list.add(biFunction);
         return functionList;
     }
 
-    public FunctionList<R, U, ? extends Object> add(BiFunction<T,U,R> function ){
+    public FunctionList<R, ? extends Object> add(Function<T,R> function ){
         list.add(function);
-        return (FunctionList<R, U, ? extends Object>) this;
+        return (FunctionList<R, ? extends Object>) this;
     }
 
-    public List<BiFunction> getList() {
+    public List<Function> getList() {
         return list;
     }
 }

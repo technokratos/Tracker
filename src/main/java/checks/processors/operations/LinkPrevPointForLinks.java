@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 /**
  * Created by denis on 07.03.17.
  */
-public class LinkPrevPointForLinks extends ContextFunction<java.util.List<Pifagor.Link>, Graphics2D, java.util.List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>> {
+public class LinkPrevPointForLinks extends ContextFunction<java.util.List<Pifagor.Link>, java.util.List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>> {
     @Override
-    public List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> apply(List<Pifagor.Link> links, Graphics2D graphics2D) {
+    public List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> apply(List<Pifagor.Link> links) {
         return links.stream()
                 .filter(l -> tracker.getPrevTrack((P2t) l.getA().getP()) != null
                         && tracker.getPrevTrack((P2t) l.getB().getP()) != null)

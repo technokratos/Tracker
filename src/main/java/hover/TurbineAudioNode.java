@@ -30,7 +30,7 @@ public class TurbineAudioNode {
         }
         final int sampleRate = (int) (normalSampleTrate * ratio);
         if (audioNode.getAudioData().getSampleRate() != sampleRate) {
-            System.out.println("New sample rate "  + sampleRate);
+            //System.out.println("New sample rate "  + sampleRate);
             audioNode.stop();
             audioNode.getAudioData().setupFormat(audioNode.getAudioData().getChannels(), audioNode.getAudioData().getBitsPerSample(), sampleRate);
             audioNode.play();
@@ -38,7 +38,7 @@ public class TurbineAudioNode {
     }
 
     public void setLevel(float level) {
-        System.out.println("MIN " + min + " max " + max + "  level " + level);
+        //System.out.println("MIN " + min + " max " + max + "  level " + level);
         setRatio((0.25f + (1f - 0.25f) * (level - min) / (max - min)));
     }
 }

@@ -15,6 +15,7 @@ import checks.types.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static java.lang.Math.abs;
 
@@ -45,7 +46,7 @@ public class BaseProcessor<T extends ImageGray, D extends ImageGray> implements 
         createKLT(first);
     }
 
-    public <T,U,R> FunctionList<R,U, ? extends Object> add(BiFunction<T,U,R> function) {
+    public <T, R> FunctionList<R, ? extends Object> add(Function<T,R> function) {
         functionList = FunctionList.get(function);
         return functionList;
     }
@@ -92,11 +93,13 @@ public class BaseProcessor<T extends ImageGray, D extends ImageGray> implements 
         java.util.List<P2t> tracks = tracker.getActiveTracks();
 
         Object prevResult = tracks;
-        for (BiFunction f: (java.util.List<BiFunction>) functionList.getList()) {
+        for (Function f: (java.util.List<Function>) functionList.getList()) {
             if (f instanceof ContextFunction) {
                 ((ContextFunction) f).setTracker(tracker);
+                ((ContextFunction) f).setG2(g2);
+
             }
-            prevResult = f.apply(prevResult, g2);
+            prevResult = f.apply(prevResult);
         }
 
         if (tracker.getSpawnCount()%10 ==0) {

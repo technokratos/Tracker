@@ -34,6 +34,8 @@ package hover;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.PhysicsTickListener;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.objects.PhysicsVehicle;
@@ -79,28 +81,31 @@ public class PhysicsHoverControl extends PhysicsVehicle implements PhysicsContro
     protected Vector3f tempVect3 = new Vector3f(0, 0, 0);
 
     private final TurbineAudioNode turbineNode;
+    private final AudioContainer hitAudioContainer;
 //    protected float rotationCounterForce = 10000f;
 //    protected float speedCounterMult = 2000f;
 //    protected float multiplier = 1000f;
 
-    public PhysicsHoverControl(AudioNode turbineNode) {
-        this.turbineNode = new TurbineAudioNode(turbineNode, 0f, 32f);
-    }
-
+//    public PhysicsHoverControl(AudioNode turbineNode) {
+//        this.turbineNode = new TurbineAudioNode(turbineNode, 0f, 32f);
+//    }
+//
     /**
      * Creates a new PhysicsNode with the supplied collision shape
      * @param shape
      * @param turbineNode
+     * @param hitAudioContainer
      */
-    public PhysicsHoverControl(CollisionShape shape, AudioNode turbineNode) {
-        super(shape);
-        this.turbineNode = new TurbineAudioNode(turbineNode, 0f, 32f);
-        createWheels();
-    }
+//    public PhysicsHoverControl(CollisionShape shape, AudioNode turbineNode) {
+//        super(shape);
+//        this.turbineNode = new TurbineAudioNode(turbineNode, 0f, 32f);
+//        createWheels();
+//    }
 
-    public PhysicsHoverControl(CollisionShape shape, float mass, AudioNode turbineNode) {
+    public PhysicsHoverControl(CollisionShape shape, float mass, AudioNode turbineNode, AudioContainer hitAudioContainer) {
         super(shape, mass);
         this.turbineNode = new TurbineAudioNode(turbineNode, 0f, 32f);
+        this.hitAudioContainer = hitAudioContainer;
         createWheels();
     }
 
@@ -196,7 +201,7 @@ public class PhysicsHoverControl extends PhysicsVehicle implements PhysicsContro
             getMotionState().applyTransform(spatial);
         }
         Vector3f linearVelocity = tempVect3.multLocal(1, 0, 1);
-        System.out.println("Current speed " + linearVelocity.length());
+        //System.out.println("Current speed " + linearVelocity.length());
         turbineNode.setLevel(linearVelocity.length());
 
     }
@@ -215,7 +220,19 @@ public class PhysicsHoverControl extends PhysicsVehicle implements PhysicsContro
         } else {
             space.addCollisionObject(this);
             space.addTickListener(this);
+
+            space.addCollisionListener(new PhysicsCollisionListener() {
+                @Override
+                public void collision(PhysicsCollisionEvent event) {
+                    System.out.println("Collistion " + event.toString() + " type " + event.getType());
+
+                        hitAudioContainer.play();
+
+                }
+            });
         }
+
+
         this.space = space;
     }
 

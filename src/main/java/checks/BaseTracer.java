@@ -34,7 +34,6 @@ import checks.history.HistoryTracker;
 import checks.processors.BaseProcessor;
 import checks.processors.ImageProcessor;
 import checks.processors.operations.*;
-import checks.tools.Tools;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

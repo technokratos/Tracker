@@ -7,13 +7,14 @@ import checks.types.Tuple;
 import java.awt.*;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * Created by denis on 07.03.17.
  */
-public class DrawLinksWithPrevPoints implements BiFunction<java.util.List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>, Graphics2D, java.util.List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>> {
+public class DrawLinksWithPrevPoints extends ContextFunction<java.util.List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>, java.util.List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>>> {
     @Override
-    public List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> apply(List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> tuples, Graphics2D g2) {
+    public List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> apply(List<Tuple<Pifagor.Link, Tuple<P2t, P2t>>> tuples) {
         g2.setColor(Color.WHITE);
         tuples.stream()
                 //.limit(100)
