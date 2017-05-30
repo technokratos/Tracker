@@ -43,17 +43,25 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Quad;
+import com.jme3.system.awt.AwtPanel;
+import com.jme3.system.awt.PaintMode;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture.WrapMode;
 import com.jme3.texture.Texture2D;
 import com.jme3.ui.Picture;
+import com.jme3.util.BufferUtils;
+import com.jme3.util.Screenshots;
 import com.jme3.util.TempVars;
 import com.jme3.water.ReflectionProcessor;
 import com.jme3.water.WaterUtils;
 
 import javax.swing.*;
+
+import java.awt.image.BufferedImage;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import static com.jme3.math.FastMath.HALF_PI;
 import static com.jme3.math.FastMath.PI;
@@ -79,6 +87,10 @@ public class ModifiedWaterProcessor implements SceneProcessor {
     protected Plane plane = new Plane(Vector3f.UNIT_Y, Vector3f.ZERO.dot(Vector3f.UNIT_Y));
     protected float speed = 0.05f;
 
+    private FrameBuffer fb;
+    private ByteBuffer byteBuf;
+    private IntBuffer intBuf;
+    private BufferedImage img;
 
     protected AssetManager manager;
     protected Material material;
@@ -145,6 +157,16 @@ public class ModifiedWaterProcessor implements SceneProcessor {
             dispDepth = new Picture("depthTexture");
             dispDepth.setTexture(manager, depthTexture, false);
         }
+
+        byteBuf = BufferUtils.ensureLargeEnough(byteBuf, widthPicture * heightPicture * 4);
+        intBuf = byteBuf.asIntBuffer();
+
+        if (fb != null) {
+            fb.dispose();
+            fb = null;
+        }
+
+        fb = new FrameBuffer(widthPicture, heightPicture, 1);
     }
 
     public void reshape(ViewPort vp, int w, int h) {
@@ -198,6 +220,12 @@ public class ModifiedWaterProcessor implements SceneProcessor {
             displayMap(rm.getRenderer(), dispRefraction, 40);
             displayMap(rm.getRenderer(), dispReflection, 640);
             //displayMap(rm.getRenderer(), dispDepth, 448);
+
+            byteBuf.clear();
+            rm.getRenderer().readFrameBuffer(fb, byteBuf);
+            intBuf = byteBuf.asIntBuffer();
+            Screenshots.convertScreenShot2(intBuf, img);
+
         }
     }
 
@@ -249,9 +277,9 @@ public class ModifiedWaterProcessor implements SceneProcessor {
         reflectionCam = new Camera(renderWidth, renderHeight);
         refractionCam = new Camera(renderWidth, renderHeight);
 
-        refractionCam.setLocation(new Vector3f(10, 5, 0));
+        refractionCam.setLocation(new Vector3f(10, 20, 0));
         refractionCam.setRotation(new Quaternion().fromAngles(HALF_PI, 0, -0.5f));
-        reflectionCam.setLocation(new Vector3f(- 10, 5, 0));
+        reflectionCam.setLocation(new Vector3f(- 10, 20, 0));
         reflectionCam.setRotation(new Quaternion().fromAngles(HALF_PI, 0, 0.5f));
 
         final float frustum = 0.5522848f;
@@ -595,6 +623,7 @@ public class ModifiedWaterProcessor implements SceneProcessor {
         }
 
         public void reshape(ViewPort vp, int w, int h) {
+            System.out.println();
         }
 
         public boolean isInitialized() {

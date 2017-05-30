@@ -44,6 +44,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Quad;
 import com.jme3.scene.shape.Sphere;
+import com.jme3.system.AppSettings;
 import com.jme3.util.SkyFactory;
 
 import java.io.File;
@@ -57,9 +58,9 @@ public class TwoCamerasWithHous extends SimpleApplication {
     public static void main(String[] args) {
       
         TwoCamerasWithHous app = new TwoCamerasWithHous();
-        app.setShowSettings(true);
-//        app.setSettings(new AppSettings(true));
-//        app.settings.setResolution(1280, 800);
+        app.setShowSettings(false);
+        app.setSettings(new AppSettings(true));
+        app.settings.setResolution(1280, 800);
         app.setDisplayStatView(false);
         app.start();
     }
