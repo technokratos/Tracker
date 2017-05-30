@@ -221,10 +221,10 @@ public class ModifiedWaterProcessor implements SceneProcessor {
             displayMap(rm.getRenderer(), dispReflection, 640);
             //displayMap(rm.getRenderer(), dispDepth, 448);
 
-            byteBuf.clear();
-            rm.getRenderer().readFrameBuffer(fb, byteBuf);
-            intBuf = byteBuf.asIntBuffer();
-            Screenshots.convertScreenShot2(intBuf, img);
+//            byteBuf.clear();
+//            rm.getRenderer().readFrameBuffer(fb, byteBuf);
+//            intBuf = byteBuf.asIntBuffer();
+            //Screenshots.convertScreenShot2(intBuf, img);
 
         }
     }
