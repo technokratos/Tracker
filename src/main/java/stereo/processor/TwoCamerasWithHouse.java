@@ -49,7 +49,7 @@ import com.jme3.util.SkyFactory;
 
 import java.io.File;
 
-public class TwoCamerasWithHous extends SimpleApplication {
+public class TwoCamerasWithHouse extends SimpleApplication {
 
     // set default for applets
     private static boolean useHttp = true;
@@ -57,7 +57,7 @@ public class TwoCamerasWithHous extends SimpleApplication {
 
     public static void main(String[] args) {
       
-        TwoCamerasWithHous app = new TwoCamerasWithHous();
+        TwoCamerasWithHouse app = new TwoCamerasWithHouse();
         app.setShowSettings(false);
         app.setSettings(new AppSettings(true));
         app.settings.setResolution(1280, 800);
@@ -105,7 +105,7 @@ public class TwoCamerasWithHous extends SimpleApplication {
         rootNode.attachChild(lightSphere);
 
 
-        ModifiedWaterProcessor waterProcessor = new ModifiedWaterProcessor(assetManager);
+        TwoCamerasProcessor waterProcessor = new TwoCamerasProcessor(assetManager);
         //SimpleWaterProcessor waterProcessor = new SimpleWaterProcessor(assetManager);
         waterProcessor.setReflectionScene(mainScene);
         waterProcessor.setDebug(false);

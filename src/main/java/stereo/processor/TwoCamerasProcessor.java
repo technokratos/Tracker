@@ -61,7 +61,7 @@ import static com.jme3.math.FastMath.HALF_PI;
 //import com.jme3.system.awt.AwtPanel;
 //import com.jme3.system.awt.PaintMode;
 
-public class ModifiedWaterProcessor implements SceneProcessor {
+public class TwoCamerasProcessor implements SceneProcessor {
 
     protected RenderManager rm;
     protected ViewPort vp;
@@ -113,10 +113,10 @@ public class ModifiedWaterProcessor implements SceneProcessor {
 
 
     /**
-     * Creates a ModifiedWaterProcessor
+     * Creates a TwoCamerasProcessor
      * @param manager the asset manager
      */
-    public ModifiedWaterProcessor(AssetManager manager) {
+    public TwoCamerasProcessor(AssetManager manager) {
         this.manager = manager;
         material = new Material(manager, "Common/MatDefs/Water/SimpleWater.j3md");
         material.setFloat("waterDepth", waterDepth);

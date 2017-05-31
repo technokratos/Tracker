@@ -42,8 +42,8 @@ import com.jme3.input.controls.KeyTrigger;
  * @author nehon
  */
 public class ModfiedWaterUi {
-    private ModifiedWaterProcessor processor;
-    public ModfiedWaterUi(InputManager inputManager, ModifiedWaterProcessor proc) {
+    private TwoCamerasProcessor processor;
+    public ModfiedWaterUi(InputManager inputManager, TwoCamerasProcessor proc) {
         processor=proc;
 
 
