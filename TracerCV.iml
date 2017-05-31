@@ -49,9 +49,6 @@
     <orderEntry type="library" name="Maven: com.nativelibs4java:bridj:0.6.2" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.22" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.projectlombok:lombok:1.16.12" level="project" />
-    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-core:3.1.0-beta1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jmonkeyengine:jme3-desktop:3.1.0-beta1" level="project" />
-    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-lwjgl:3.1.0-beta1" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl-platform:natives-windows:2.9.3" level="project" />
     <orderEntry type="library" name="Maven: org.lwjgl.lwjgl:lwjgl-platform:natives-linux:2.9.3" level="project" />
@@ -61,6 +58,21 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.jinput:jinput-platform:natives-linux:2.0.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.jinput:jinput-platform:natives-windows:2.0.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.jinput:jinput-platform:natives-osx:2.0.5" level="project" />
+    <orderEntry type="library" name="Maven: de.jarnbjo:j-ogg-all:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-core:3.1.0-stable" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jmonkeyengine:jme3-desktop:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-lwjgl:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-bullet:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-terrain:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-bullet-native:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-blender:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-lwjgl3:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-platform:natives-windows:3.0.0b" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-platform:natives-linux:3.0.0b" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl-platform:natives-osx:3.0.0b" level="project" />
+    <orderEntry type="library" name="Maven: org.lwjgl:lwjgl:3.0.0b" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-plugins:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-effects:3.1.0-stable" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.assertj:assertj-core:3.6.2" level="project" />
   </component>

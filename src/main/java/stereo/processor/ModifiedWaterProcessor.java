@@ -43,8 +43,6 @@ import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Quad;
-import com.jme3.system.awt.AwtPanel;
-import com.jme3.system.awt.PaintMode;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image.Format;
 import com.jme3.texture.Texture;
@@ -52,19 +50,16 @@ import com.jme3.texture.Texture.WrapMode;
 import com.jme3.texture.Texture2D;
 import com.jme3.ui.Picture;
 import com.jme3.util.BufferUtils;
-import com.jme3.util.Screenshots;
 import com.jme3.util.TempVars;
-import com.jme3.water.ReflectionProcessor;
-import com.jme3.water.WaterUtils;
-
-import javax.swing.*;
 
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static com.jme3.math.FastMath.HALF_PI;
-import static com.jme3.math.FastMath.PI;
+
+//import com.jme3.system.awt.AwtPanel;
+//import com.jme3.system.awt.PaintMode;
 
 public class ModifiedWaterProcessor implements SceneProcessor {
 
