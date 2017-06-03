@@ -60,7 +60,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.java.jinput:jinput-platform:natives-osx:2.0.5" level="project" />
     <orderEntry type="library" name="Maven: de.jarnbjo:j-ogg-all:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-core:3.1.0-stable" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jmonkeyengine:jme3-desktop:3.1.0-stable" level="project" />
+    <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-desktop:3.1.0-stable" level="project" />
     <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-lwjgl:3.1.0-stable" level="project" />
     <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-bullet:3.1.0-stable" level="project" />
     <orderEntry type="library" name="Maven: org.jmonkeyengine:jme3-terrain:3.1.0-stable" level="project" />

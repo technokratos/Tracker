@@ -105,21 +105,21 @@ public class TwoCamerasWithHouse extends SimpleApplication {
         rootNode.attachChild(lightSphere);
 
 
-        TwoCamerasProcessor waterProcessor = new TwoCamerasProcessor(assetManager);
+        TwoCamerasProcessor twoCamerasProcessor = new TwoCamerasProcessor(assetManager);
         //SimpleWaterProcessor waterProcessor = new SimpleWaterProcessor(assetManager);
-        waterProcessor.setReflectionScene(mainScene);
-        waterProcessor.setDebug(false);
-        waterProcessor.setLightPosition(lightPos);
-        waterProcessor.setRefractionClippingOffset(1.0f);
+        twoCamerasProcessor.setScene(mainScene);
+        twoCamerasProcessor.setDebug(false);
+        twoCamerasProcessor.setLightPosition(lightPos);
+        twoCamerasProcessor.setRefractionClippingOffset(1.0f);
 
 
         //setting the water plane
         Vector3f waterLocation=new Vector3f(0,-20,0);
-        waterProcessor.setPlane(new Plane(Vector3f.UNIT_Y, waterLocation.dot(Vector3f.UNIT_Y)));
-        ModfiedWaterUi waterUi = new ModfiedWaterUi(inputManager, waterProcessor);
+        twoCamerasProcessor.setPlane(new Plane(Vector3f.UNIT_Y, waterLocation.dot(Vector3f.UNIT_Y)));
+        ModfiedWaterUi waterUi = new ModfiedWaterUi(inputManager, twoCamerasProcessor);
         //WaterUI  waterUi=new WaterUI (inputManager, waterProcessor);
-        waterProcessor.setWaterColor(ColorRGBA.Brown);
-        waterProcessor.setDebug(true);
+        twoCamerasProcessor.setWaterColor(ColorRGBA.Brown);
+        twoCamerasProcessor.setDebug(true);
         //lower render size for higher performance
 //        waterProcessor.setRenderSize(128,128);
         //raise depth to see through water
@@ -137,13 +137,13 @@ public class TwoCamerasWithHouse extends SimpleApplication {
         Geometry water=new Geometry("water", quad);
         water.setShadowMode(ShadowMode.Receive);
         water.setLocalRotation(new Quaternion().fromAngleAxis(-FastMath.HALF_PI, Vector3f.UNIT_X));
-        water.setMaterial(waterProcessor.getMaterial());
+        water.setMaterial(twoCamerasProcessor.getMaterial());
         water.setLocalTranslation(-200, -20, 250);
 
 
         rootNode.attachChild(water);
 
-        viewPort.addProcessor(waterProcessor);
+        viewPort.addProcessor(twoCamerasProcessor);
 
         mainScene.attachChild(scene);
         rootNode.attachChild(mainScene);

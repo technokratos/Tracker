@@ -50,9 +50,13 @@ import com.jme3.texture.Texture.WrapMode;
 import com.jme3.texture.Texture2D;
 import com.jme3.ui.Picture;
 import com.jme3.util.BufferUtils;
+import com.jme3.util.Screenshots;
 import com.jme3.util.TempVars;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
@@ -65,15 +69,15 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     protected RenderManager rm;
     protected ViewPort vp;
-    protected Spatial reflectionScene;
-    protected ViewPort reflectionView;
-    protected ViewPort refractionView;
-    protected FrameBuffer reflectionBuffer;
-    protected FrameBuffer refractionBuffer;
-    protected Camera reflectionCam;
-    protected Camera refractionCam;
-    protected Texture2D reflectionTexture;
-    protected Texture2D refractionTexture;
+    protected Spatial scene;
+    protected ViewPort firstView;
+    protected ViewPort secondView;
+    protected FrameBuffer firstBuffer;
+    protected FrameBuffer secondBuffer;
+    protected Camera firstCam;
+    protected Camera secondCam;
+    protected Texture2D firstTexture;
+    protected Texture2D secondTexture;
     protected Texture2D depthTexture;
     protected Texture2D normalTexture;
     protected Texture2D dudvTexture;
@@ -101,19 +105,23 @@ public class TwoCamerasProcessor implements SceneProcessor {
     private Plane refractionClipPlane;
 
     private float refractionClippingOffset = 0.3f;
-    private float reflectionClippingOffset = -5f;        
+    private float reflectionClippingOffset = -5f;
 
     private float distortionScale = 0.2f;
     private float distortionMix = 0.5f;
     private float texScale = 1f;
 
-    private int widthPicture = 600;
-    private int heightPicture = 600;
+    private int widthPicture = 512;
+    private int heightPicture = 512;
 
+    ByteBuffer outBuf = BufferUtils.createByteBuffer(widthPicture * heightPicture * 4);
+    BufferedImage awtImage = new BufferedImage(widthPicture, heightPicture, BufferedImage.TYPE_4BYTE_ABGR_PRE);
+    int frameCounter = 0;
 
 
     /**
      * Creates a TwoCamerasProcessor
+     *
      * @param manager the asset manager
      */
     public TwoCamerasProcessor(AssetManager manager) {
@@ -123,7 +131,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
         material.setFloat("waterTransparency", waterTransparency / 10);
         material.setColor("waterColor", ColorRGBA.White);
         material.setVector3("lightPos", new Vector3f(1, -1, 1));
-        
+
         material.setFloat("distortionScale", distortionScale);
         material.setFloat("distortionMix", distortionMix);
         material.setFloat("texScale", texScale);
@@ -146,9 +154,9 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
         if (debug) {
             dispRefraction = new Picture("dispRefraction");
-            dispRefraction.setTexture(manager, refractionTexture, false);
+            dispRefraction.setTexture(manager, secondTexture, false);
             dispReflection = new Picture("dispRefraction");
-            dispReflection.setTexture(manager, reflectionTexture, false);
+            dispReflection.setTexture(manager, firstTexture, false);
             dispDepth = new Picture("depthTexture");
             dispDepth.setTexture(manager, depthTexture, false);
         }
@@ -170,6 +178,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
     public boolean isInitialized() {
         return rm != null;
     }
+
     float time = 0;
     float savedTpf = 0;
 
@@ -185,26 +194,26 @@ public class TwoCamerasProcessor implements SceneProcessor {
     public void postQueue(RenderQueue rq) {
         Camera sceneCam = rm.getCurrentCamera();
 
-//        refractionCam.setFrustum(sceneCam.getFrustumNear(),
+//        secondCam.setFrustum(sceneCam.getFrustumNear(),
 //                sceneCam.getFrustumFar(),
 //                sceneCam.getFrustumLeft(),
 //                sceneCam.getFrustumRight(),
 //                sceneCam.getFrustumTop(),
 //                sceneCam.getFrustumBottom());
-//        reflectionCam.setFrustum(sceneCam.getFrustumNear(),
+//        firstCam.setFrustum(sceneCam.getFrustumNear(),
 //                sceneCam.getFrustumFar(),
 //                sceneCam.getFrustumLeft(),
 //                sceneCam.getFrustumRight(),
 //                sceneCam.getFrustumTop(),
 //                sceneCam.getFrustumBottom());
 //
-//        refractionCam.setParallelProjection(sceneCam.isParallelProjection());
-//        reflectionCam.setParallelProjection(sceneCam.isParallelProjection());
+//        secondCam.setParallelProjection(sceneCam.isParallelProjection());
+//        firstCam.setParallelProjection(sceneCam.isParallelProjection());
 
 
         //Rendering reflection and refraction
-        rm.renderViewPort(reflectionView, savedTpf);
-        rm.renderViewPort(refractionView, savedTpf);
+        rm.renderViewPort(firstView, savedTpf);
+        rm.renderViewPort(secondView, savedTpf);
         rm.getRenderer().setFrameBuffer(vp.getOutputFrameBuffer());
         rm.setCamera(sceneCam, false);
 
@@ -212,8 +221,8 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     public void postFrame(FrameBuffer out) {
         if (debug) {
-            displayMap(rm.getRenderer(), dispRefraction, 40);
-            displayMap(rm.getRenderer(), dispReflection, 640);
+            displayMap(rm.getRenderer(), dispRefraction, 40, secondBuffer);
+            displayMap(rm.getRenderer(), dispReflection, 640, firstBuffer);
             //displayMap(rm.getRenderer(), dispDepth, 448);
 
 //            byteBuf.clear();
@@ -228,7 +237,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
     }
 
     //debug only : displays maps
-    protected void displayMap(Renderer r, Picture pic, int left) {
+    protected void displayMap(Renderer r, Picture pic, int left, FrameBuffer frameBuffer) {
         Camera cam = vp.getCamera();
         rm.setCamera(cam, true);
         int h = cam.getHeight();
@@ -237,7 +246,31 @@ public class TwoCamerasProcessor implements SceneProcessor {
         pic.setHeight(heightPicture);
         pic.updateGeometricState();
         rm.renderGeometry(pic);
+
+        takeScreenShot(r, frameBuffer);
         rm.setCamera(cam, false);
+
+
+
+
+    }
+
+    private void takeScreenShot(Renderer r, FrameBuffer frameBuffer) {
+        frameCounter++;
+        if (frameCounter % 9 == 0) {
+
+            r.readFrameBuffer(frameBuffer, outBuf);
+            Screenshots.convertScreenShot(outBuf, awtImage);
+
+            //
+            try {
+
+                ImageIO.write(awtImage, "png", new File("screenShot" + frameCounter));
+
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     protected void loadTextures(AssetManager manager) {
@@ -248,93 +281,93 @@ public class TwoCamerasProcessor implements SceneProcessor {
     }
 
     protected void createTextures() {
-        reflectionTexture = new Texture2D(renderWidth, renderHeight, Format.RGBA8);
-        refractionTexture = new Texture2D(renderWidth, renderHeight, Format.RGBA8);
-        
-        reflectionTexture.setMinFilter(Texture.MinFilter.Trilinear);
-        reflectionTexture.setMagFilter(Texture.MagFilter.Bilinear);
-        
-        refractionTexture.setMinFilter(Texture.MinFilter.Trilinear);
-        refractionTexture.setMagFilter(Texture.MagFilter.Bilinear);
-        
+        firstTexture = new Texture2D(renderWidth, renderHeight, Format.RGBA8);
+        secondTexture = new Texture2D(renderWidth, renderHeight, Format.RGBA8);
+
+        firstTexture.setMinFilter(Texture.MinFilter.Trilinear);
+        firstTexture.setMagFilter(Texture.MagFilter.Bilinear);
+
+        secondTexture.setMinFilter(Texture.MinFilter.Trilinear);
+        secondTexture.setMagFilter(Texture.MagFilter.Bilinear);
+
         depthTexture = new Texture2D(renderWidth, renderHeight, Format.Depth);
     }
 
     protected void applyTextures(Material mat) {
-        mat.setTexture("water_reflection", reflectionTexture);
-        mat.setTexture("water_refraction", refractionTexture);
+        mat.setTexture("water_reflection", firstTexture);
+        mat.setTexture("water_refraction", secondTexture);
         mat.setTexture("water_depthmap", depthTexture);
         mat.setTexture("water_normalmap", normalTexture);
         mat.setTexture("water_dudvmap", dudvTexture);
     }
 
     protected void createPreViews() {
-        reflectionCam = new Camera(renderWidth, renderHeight);
-        refractionCam = new Camera(renderWidth, renderHeight);
+        firstCam = new Camera(renderWidth, renderHeight);
+        secondCam = new Camera(renderWidth, renderHeight);
 
-        refractionCam.setLocation(new Vector3f(10, 20, 0));
-        refractionCam.setRotation(new Quaternion().fromAngles(HALF_PI, 0, -0.5f));
-        reflectionCam.setLocation(new Vector3f(- 10, 20, 0));
-        reflectionCam.setRotation(new Quaternion().fromAngles(HALF_PI, 0, 0.5f));
+        secondCam.setLocation(new Vector3f(10, 20, 0));
+        secondCam.setRotation(new Quaternion().fromAngles(HALF_PI, 0, -0.5f));
+        firstCam.setLocation(new Vector3f(-10, 20, 0));
+        firstCam.setRotation(new Quaternion().fromAngles(HALF_PI, 0, 0.5f));
 
         final float frustum = 0.5522848f;
-        refractionCam.setFrustum(1,
+        secondCam.setFrustum(1,
                 1000,
                 -frustum, frustum, frustum, -frustum);
-        reflectionCam.setFrustum(1,
+        firstCam.setFrustum(1,
                 1000,
                 -frustum, frustum, frustum, -frustum);
 
-        refractionCam.setParallelProjection(false);
-        reflectionCam.setParallelProjection(false);
+        secondCam.setParallelProjection(false);
+        firstCam.setParallelProjection(false);
 
 
-
-//        reflectionCam.setLocation(new Vector3f(0, 100, 0));
-//        reflectionCam.setRotation(new Quaternion().fromAngles(HALF_PI, PI, 0));
-
-        // create a pre-view. a view that is rendered before the main view
-        reflectionView = new ViewPort("Reflection View", reflectionCam);
-        reflectionView.setClearFlags(true, true, true);
-        reflectionView.setBackgroundColor(ColorRGBA.Black);
-        // create offscreen framebuffer
-        reflectionBuffer = new FrameBuffer(renderWidth, renderHeight, 1);
-        //setup framebuffer to use texture
-        reflectionBuffer.setDepthBuffer(Format.Depth);
-        reflectionBuffer.setColorTexture(reflectionTexture);
-
-        //set viewport to render to offscreen framebuffer
-        reflectionView.setOutputFrameBuffer(reflectionBuffer);
-
-        //reflectionView.addProcessor(new ReflectionProcessor(reflectionCam, reflectionBuffer, reflectionClipPlane));
-        // attach the scene to the viewport to be rendered
-        reflectionView.attachScene(reflectionScene);
+//        firstCam.setLocation(new Vector3f(0, 100, 0));
+//        firstCam.setRotation(new Quaternion().fromAngles(HALF_PI, PI, 0));
 
         // create a pre-view. a view that is rendered before the main view
-        refractionView = new ViewPort("Refraction View", refractionCam);
-        refractionView.setClearFlags(true, true, true);
-        refractionView.setBackgroundColor(ColorRGBA.Black);
+        firstView = new ViewPort("Reflection View", firstCam);
+        firstView.setClearFlags(true, true, true);
+        firstView.setBackgroundColor(ColorRGBA.Black);
         // create offscreen framebuffer
-        refractionBuffer = new FrameBuffer(renderWidth, renderHeight, 1);
+        firstBuffer = new FrameBuffer(renderWidth, renderHeight, 1);
         //setup framebuffer to use texture
-        refractionBuffer.setDepthBuffer(Format.Depth);
-        refractionBuffer.setColorTexture(refractionTexture);
-        refractionBuffer.setDepthTexture(depthTexture);
-        //set viewport to render to offscreen framebuffer
-        refractionView.setOutputFrameBuffer(refractionBuffer);
+        firstBuffer.setDepthBuffer(Format.Depth);
+        firstBuffer.setColorTexture(firstTexture);
 
-        //refractionView.addProcessor(new RefractionProcessor());
+        //set viewport to render to offscreen framebuffer
+        firstView.setOutputFrameBuffer(firstBuffer);
+
+        //firstView.addProcessor(new ReflectionProcessor(firstCam, firstBuffer, reflectionClipPlane));
         // attach the scene to the viewport to be rendered
-        refractionView.attachScene(reflectionScene);
+        firstView.attachScene(scene);
+
+        // create a pre-view. a view that is rendered before the main view
+        secondView = new ViewPort("Refraction View", secondCam);
+        secondView.setClearFlags(true, true, true);
+        secondView.setBackgroundColor(ColorRGBA.Black);
+        // create offscreen framebuffer
+        secondBuffer = new FrameBuffer(renderWidth, renderHeight, 1);
+        //setup framebuffer to use texture
+        secondBuffer.setDepthBuffer(Format.Depth);
+        secondBuffer.setColorTexture(secondTexture);
+        secondBuffer.setDepthTexture(depthTexture);
+        //set viewport to render to offscreen framebuffer
+        secondView.setOutputFrameBuffer(secondBuffer);
+
+        //secondView.addProcessor(new RefractionProcessor());
+        // attach the scene to the viewport to be rendered
+        secondView.attachScene(scene);
     }
 
     protected void destroyViews() {
-        //  rm.removePreView(reflectionView);
-        rm.removePreView(refractionView);
+        //  rm.removePreView(firstView);
+        rm.removePreView(secondView);
     }
 
     /**
      * Get the water material from this processor, apply this to your water quad.
+     *
      * @return
      */
     public Material getMaterial() {
@@ -344,14 +377,16 @@ public class TwoCamerasProcessor implements SceneProcessor {
     /**
      * Sets the reflected scene, should not include the water quad!
      * Set before adding processor.
+     *
      * @param spat
      */
-    public void setReflectionScene(Spatial spat) {
-        reflectionScene = spat;
+    public void setScene(Spatial spat) {
+        scene = spat;
     }
 
     /**
      * returns the width of the reflection and refraction textures
+     *
      * @return
      */
     public int getRenderWidth() {
@@ -360,6 +395,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * returns the height of the reflection and refraction textures
+     *
      * @return
      */
     public int getRenderHeight() {
@@ -369,6 +405,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
     /**
      * Set the reflection Texture render size,
      * set before adding the processor!
+     *
      * @param width
      * @param height
      */
@@ -379,6 +416,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * returns the water plane
+     *
      * @return
      */
     public Plane getPlane() {
@@ -387,6 +425,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * Set the water plane for this processor.
+     *
      * @param plane
      */
     public void setPlane(Plane plane) {
@@ -397,6 +436,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * Set the water plane using an origin (location) and a normal (reflection direction).
+     *
      * @param origin Set to 0,-6,0 if your water quad is at that location for correct reflection
      * @param normal Set to 0,1,0 (Vector3f.UNIT_Y) for normal planar water
      */
@@ -415,6 +455,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * Set the light Position for the processor
+     *
      * @param position
      */
     //TODO maybe we should provide a convenient method to compute position from direction
@@ -424,6 +465,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * Set the color that will be added to the refraction texture.
+     *
      * @param color
      */
     public void setWaterColor(ColorRGBA color) {
@@ -433,6 +475,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
     /**
      * Higher values make the refraction texture shine through earlier.
      * Default is 4
+     *
      * @param depth
      */
     public void setWaterDepth(float depth) {
@@ -442,6 +485,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * return the water depth
+     *
      * @return
      */
     public float getWaterDepth() {
@@ -450,6 +494,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * returns water transparency
+     *
      * @return
      */
     public float getWaterTransparency() {
@@ -458,6 +503,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * sets the water transparency default os 0.1f
+     *
      * @param waterTransparency
      */
     public void setWaterTransparency(float waterTransparency) {
@@ -467,6 +513,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * Sets the speed of the wave animation, default = 0.05f.
+     *
      * @param speed
      */
     public void setWaveSpeed(float speed) {
@@ -475,17 +522,18 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * returns the speed of the wave animation.
+     *
      * @return the speed
      */
-    public float getWaveSpeed(){
+    public float getWaveSpeed() {
         return speed;
     }
-    
+
     /**
      * Sets the scale of distortion by the normal map, default = 0.2
      */
     public void setDistortionScale(float value) {
-        distortionScale  = value;
+        distortionScale = value;
         material.setFloat("distortionScale", distortionScale);
     }
 
@@ -540,6 +588,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * retruns true if the waterprocessor is in debug mode
+     *
      * @return
      */
     public boolean isDebug() {
@@ -548,6 +597,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * set to true to display reflection and refraction textures in the GUI for debug purpose
+     *
      * @param debug
      */
     public void setDebug(boolean debug) {
@@ -556,6 +606,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * Creates a quad with the water material applied to it.
+     *
      * @param width
      * @param height
      * @return
@@ -570,6 +621,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * returns the reflection clipping plane offset
+     *
      * @return
      */
     public float getReflectionClippingOffset() {
@@ -579,6 +631,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
     /**
      * sets the reflection clipping plane offset
      * set a nagetive value to lower the clipping plane for relection texture rendering.
+     *
      * @param reflectionClippingOffset
      */
     public void setReflectionClippingOffset(float reflectionClippingOffset) {
@@ -588,6 +641,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
 
     /**
      * returns the refraction clipping plane offset
+     *
      * @return
      */
     public float getRefractionClippingOffset() {
@@ -597,6 +651,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
     /**
      * Sets the refraction clipping plane offset
      * set a positive value to raise the clipping plane for refraction texture rendering
+     *
      * @param refractionClippingOffset
      */
     public void setRefractionClippingOffset(float refractionClippingOffset) {
@@ -626,7 +681,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
         }
 
         public void preFrame(float tpf) {
-            refractionCam.setClipPlane(refractionClipPlane, Plane.Side.Negative);//,-1
+            secondCam.setClipPlane(refractionClipPlane, Plane.Side.Negative);//,-1
 
         }
 
@@ -641,17 +696,17 @@ public class TwoCamerasProcessor implements SceneProcessor {
     }
 
 
-    public static void updateReflectionCam(Camera reflectionCam, Plane plane, Camera sceneCam){
+    public static void updateReflectionCam(Camera reflectionCam, Plane plane, Camera sceneCam) {
 
         TempVars vars = TempVars.get();
         //Temp vects for reflection cam orientation calculation
-        Vector3f sceneTarget =  vars.vect1;
-        Vector3f  reflectDirection =  vars.vect2;
-        Vector3f  reflectUp =  vars.vect3;
-        Vector3f  reflectLeft = vars.vect4;
-        Vector3f  camLoc = vars.vect5;
+        Vector3f sceneTarget = vars.vect1;
+        Vector3f reflectDirection = vars.vect2;
+        Vector3f reflectUp = vars.vect3;
+        Vector3f reflectLeft = vars.vect4;
+        Vector3f camLoc = vars.vect5;
         camLoc = plane.reflect(sceneCam.getLocation(), camLoc);
-        //reflectionCam.setLocation(camLoc);
+        //firstCam.setLocation(camLoc);
 
         reflectionCam.setFrustum(sceneCam.getFrustumNear(),
                 sceneCam.getFrustumFar(),
@@ -673,7 +728,7 @@ public class TwoCamerasProcessor implements SceneProcessor {
         reflectLeft = plane.reflect(sceneTarget, reflectLeft);
         reflectLeft.subtractLocal(camLoc);
 
-        //reflectionCam.setAxes(reflectLeft, reflectUp, reflectDirection);
+        //firstCam.setAxes(reflectLeft, reflectUp, reflectDirection);
 
         vars.release();
     }
