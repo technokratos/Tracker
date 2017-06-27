@@ -10,7 +10,7 @@ import java.util.stream.Stream;
  */
 public class Pool {
 
-    private static ExecutorService service = Executors.newFixedThreadPool(4);
+    private static ExecutorService service = Executors.newFixedThreadPool(8);
 
     public static void exec(Runnable... task){
 

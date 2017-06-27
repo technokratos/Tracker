@@ -104,8 +104,8 @@ public class BaseTracer< T extends ImageGray, D extends ImageGray>
 		MediaManager media = DefaultMediaManager.INSTANCE;
 
 		int pause;
-		SimpleImageSequence sequence =
-				new LoadFileImageSequence(ImageType.single(imageType), "src/main/resources/readyImages/cubes","png");pause=2000;
+		SimpleImageSequence<ImageGray> sequence =
+				new LoadFileImageSequence<>(ImageType.single(imageType), "src/main/resources/readyImages/cubes","png");pause=2000;
 				//Tools.readGif("flyer.gif"); pause = 1000;
 				//Tools.readGif("racing2.gif"); pause = 1000;
 				//media.openVideo("zoom.mjpeg", ImageType.single(imageType)); pause=1500;
@@ -121,10 +121,10 @@ public class BaseTracer< T extends ImageGray, D extends ImageGray>
 				.add(new DrawLinksWithPrevPoints())
 				.add(new FindAndCountDirs(320, 240))
 				.add(new DrawDirs(320, 240, 0.01));
-		final BaseProcessor imageProcessor = new BaseProcessor(functionList, imageType, 100, HistoryTracker.Type.DEPTH);
+		final BaseProcessor imageProcessor = new BaseProcessor<>(functionList, imageType, 100, HistoryTracker.Type.DEPTH);
 
 
-		BaseTracer app = new BaseTracer(imageProcessor, pause, 3);
+		BaseTracer<ImageGray, ImageGray> app = new BaseTracer<>(imageProcessor, pause, 3);
 
 
 		app.process(sequence);
